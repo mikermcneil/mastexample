@@ -6359,6 +6359,7 @@ Mast.Socket =_.extend(
 	// Override backbone.sync when Socket object is instantiated
 	initialize: function(cb) {
 		_.bindAll(this);
+
 		this.autoconnect && this.connect(cb);
 		Backbone.sync = function(method, model, options) {						// Override Backbone.sync	
 			switch (method) {													// (reference: http://documentcloud.github.com/backbone/docs/backbone-localstorage.html)
@@ -6401,6 +6402,7 @@ Mast.Socket =_.extend(
 		this.baseurl = baseurl || this.baseurl;
 		
 		debug.debug("Connecting socket to "+this.baseurl);
+		console.log("CONNECTING!!!");
 		this._socket = this.io.connect(this.baseurl);
 
 		// Listen for latest session data from server and update local store
