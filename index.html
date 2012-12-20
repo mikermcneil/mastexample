@@ -70,17 +70,28 @@ Mast.registerTree('CheckList',{
 
 	branchOutlet: '.branch-outlet',
 	branchComponent: 'CheckListItem',
-	collection: [],
-	afterCreate: function (){}
+	collection: {
+		model: {},
+		url: 'file:///code/mastexample/test.json'
+	},
+	afterCreate: function (){
+		Mast.Socket.request('file:///code/mastexample/test.json',{},function (r) {
+			console.log(r);
+		});
+	}
 });
 
-
-Mast.registerCollection('DataCollection',{})
 
 </script>
 
 <script type="text/javascript">
-Mast.raise(function () {
+
+// Instantiate Mast with socket.io disabled
+Mast.raise({
+	socket: false
+},
+// Ready function will be called when Mast is ready
+function () {
 	Mast.app = new Mast.components.App({
 		outlet: 'body'
 	});

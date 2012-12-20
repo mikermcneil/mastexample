@@ -6402,7 +6402,6 @@ Mast.Socket =_.extend(
 		this.baseurl = baseurl || this.baseurl;
 		
 		debug.debug("Connecting socket to "+this.baseurl);
-		console.log("CONNECTING!!!");
 		this._socket = this.io.connect(this.baseurl);
 
 		// Listen for latest session data from server and update local store
@@ -6518,22 +6517,36 @@ Mast.Socket =_.extend(
 	},
 	
 	// Request wrappers for each of the CRUD HTTP verbs
-	get: function (url,data,options) { this.request(url,data,options,'get') },
-	post: function (url,data,options) { this.request(url,data,options,'post') },
-	put: function (url,data,options) { this.request(url,data,options,'put') },
-	'delete': function (url,data,options) { this.request(url,data,options,'delete') },
+	get: function (url,data,options) { this.request(url,data,options,'get'); },
+	post: function (url,data,options) { this.request(url,data,options,'post'); },
+	put: function (url,data,options) { this.request(url,data,options,'put'); },
+	'delete': function (url,data,options) { this.request(url,data,options,'delete'); },
 	
 	// Simulate an HTTP request to the backend
 	request: function (url,data,options, method) {
-		url = url.replace(/\/*$/,'');											// Remove trailing slash
+		// Remove trailing slash
+		url = url.replace(/\/*$/,'');
+
+		// If options is a function, treat it as a callback
+		// Otherwise the "success" property will be treated as the callback
+		var cb;
+		if (_.isFunction(options)) cb = options;
+		else cb = options.success;
+
+		// If not connected, fall back to $.ajax
+		if (!this.connected) {
+			return $.ajax(url,_.extend(options,{
+				data: data,
+				type: method
+			}));
+		}
+
 		this._send('message',{
 			url: url,
 			data: data,
 			method: method || 'get'
 		},function (parsedResult) {
-			options && ((_.isFunction(options) ? 
-				options :														// If options is a function, treat it as a callback
-				options.success) (parsedResult));								// Otherwise the "success" property will be treated as the callback
+			cb(parsedResult);
 		});
 	},
 	
