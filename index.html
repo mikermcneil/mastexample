@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head></head>
+
+<body>
+
+<!-- Template library -->
+<div style="display:none;" id='template-library'>
+	<div class='checklist-template'>
+		<h2>Here it is</h2>
+		<ul class='branch-outlet'></ul>
+		<input type="text" placeholder="type stuff"/>
+	</div>
+
+	<div class='checklist-template-plus'>
+		<h2>Here it is AGAIN!</h2>
+		<ul class='branch-outlet'></ul>
+		<input type="text" placeholder="type stuff"/>
+	</div>
+
+	<li class='list-item-template'>
+		{{title}}
+	</li>
+
+	<div class='app-template'>
+		<h1>Mast example</h1>
+		<div class='checklist-outlet'></div>
+		<div class='checklist-plus-plus-outlet'></div>
+	</div>
+</div>
+
+</body>
+
+
+<script type="text/javascript" src="./mast.min.js"></script>
+<script type="text/javascript">
+
+Mast.registerComponent('App',{
+	template: 'div.app-template',
+
+	regions: {
+		'.checklist-outlet': 'CheckList',
+		'.checklist-plus-plus-outlet': 'CheckListPlusPlus'
+	}
+});
+
+
+Mast.registerComponent('CheckListItem',{
+	template: 'li.list-item-template'
+});
+
+
+Mast.registerTree('CheckListPlusPlus',{
+	extendsFrom: 'CheckList',
+	template: 'div.checklist-template-plus'
+});
+
+
+Mast.registerTree('CheckList',{
+	template: 'div.checklist-template',
+
+	events: {
+		pressEnter: 'addItem'
+	},
+
+	addItem: function (e) {
+		var newItemTitle = this.$('input').val();
+		this.collection.add({
+			title: newItemTitle
+		});
+	},
+
+	branchOutlet: '.branch-outlet',
+	branchComponent: 'CheckListItem',
+	collection: [],
+	afterCreate: function (){}
+});
+
+
+Mast.registerCollection('DataCollection',{})
+
+</script>
+
+<script type="text/javascript">
+Mast.raise(function () {
+	Mast.app = new Mast.components.App({
+		outlet: 'body'
+	});
+})
+</script>
+</html>
